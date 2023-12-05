@@ -21,6 +21,7 @@ public static class TableGenerator
             foreach (var userMove in moves)
             {
                 var userResult = gameLogic.GetGameResultForUser((compMove, userMove));
+                userResult = char.ToUpper(userResult[0]) + userResult.Substring(1);
                 row.Add(userResult);
             }
             tableData.Add(row);

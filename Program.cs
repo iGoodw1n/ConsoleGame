@@ -105,6 +105,9 @@ public class Program
         Console.WriteLine($"Your move: {userMove}");
         Console.WriteLine($"Computer move: {computerMove}");
         var result = gameLogic.GetGameResultForUser((computerMove, userMove));
+        result = result.Equals("draw") ?
+            char.ToUpper(result[0]) + result.Substring(1) :
+            $"You {result}";
         Console.WriteLine(result);
     }
 }

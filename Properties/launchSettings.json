@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Game": {
-      "commandName": "Project",
-      "commandLineArgs": "rock Spock paper lizard scissors"
-    }
-  }
-}

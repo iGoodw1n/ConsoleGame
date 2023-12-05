@@ -10,9 +10,9 @@ public class GameLogic
 
     public string GetGameResultForUser((string ComputerMove, string UserMove) moves)
     {
-        if (IsDraw(moves)) return "Draw";
-        if (IsUserWinner(moves)) return "Win";
-        return "Lose";
+        if (IsDraw(moves)) return "draw";
+        if (IsUserWinner(moves)) return "win";
+        return "lose";
     }
 
     bool IsUserWinner((string ComputerMove, string UserMove) moves)
