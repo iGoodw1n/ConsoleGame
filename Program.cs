@@ -1,9 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Channels;
-
-namespace Game;
+﻿namespace Game;
 
 public class Program
 {
@@ -83,7 +78,7 @@ public class Program
                 Environment.Exit(0);
             }
 
-            if (inputAsInt > 0 && inputAsInt < moves.Length)
+            if (inputAsInt > 0 && inputAsInt <= moves.Length)
             {
                 PrintResultOfGame(moves[inputAsInt - 1], computerMove, gameLogic);
                 break;
