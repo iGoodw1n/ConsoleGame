@@ -1,54 +1,58 @@
-﻿namespace Game;
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace Game;
 
 public class Program
 {
     static void Main(string[] args)
     {
-        try
-        {
-            CheckParameters(args);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            Console.WriteLine(Messages.GAME_RULES);
-            return;
-        }
-        var computerMove = args[Random.Shared.Next(0, args.Length)];
-        var keyBytes = HMACService.GenerateHMACKey(keyLengthBytes: 32);
-        var signedComputerMove = HMACService.SignComputerMove(keyBytes, computerMove);
-        Console.WriteLine("HMAC: " + signedComputerMove);
+        CheckParameters(args);
+        var (keyBytes, computerMove) = MakeMove(args);
         PrintMenu(args);
-        var gameLogic = new GameLogic(args);
-        HandleUserInput(args, gameLogic, computerMove);
-
-        var key = BitConverter.ToString(keyBytes).Replace("-", "");
-        Console.WriteLine($"HMAC Key: {key}");
+        HandleUserInput(args, new GameLogic(args), computerMove);
+        PrintKey(keyBytes);
     }
-
-
 
     static void CheckParameters(string[] args)
     {
-        if (args.Length == 0)
+        try
         {
-            throw new ArgumentException(Messages.NO_PARAMETERS_ERROR);
-        }
+            if (args.Length == 0)
+            {
+                throw new ArgumentException(Messages.NO_PARAMETERS_ERROR);
+            }
 
-        if (args.Length < 3)
-        {
-            throw new ArgumentException(Messages.PARAMETERS_LESS_MIN_ERROR);
-        }
+            if (args.Length < 3)
+            {
+                throw new ArgumentException(Messages.PARAMETERS_LESS_MIN_ERROR);
+            }
 
-        if (args.Length % 2 == 0)
-        {
-            throw new ArgumentException(Messages.PARAMETERS_NOT_ODD_ERROR);
-        }
+            if (args.Length % 2 == 0)
+            {
+                throw new ArgumentException(Messages.PARAMETERS_NOT_ODD_ERROR);
+            }
 
-        if (args.Distinct().Count() != args.Length)
-        {
-            throw new ArgumentException(Messages.PARAMETERS_NOT_UNIQUE_ERROR);
+            if (args.Distinct().Count() != args.Length)
+            {
+                throw new ArgumentException(Messages.PARAMETERS_NOT_UNIQUE_ERROR);
+            }
         }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(Messages.GAME_RULES);
+            Environment.Exit(1);
+        }
+    }
+
+    static (byte[] KeyBytes, string ComputerMove) MakeMove(string[] moves)
+    {
+        var computerMove = moves[Random.Shared.Next(0, moves.Length)];
+        var keyBytes = HMACService.GenerateHMACKey(keyLengthBytes: 32);
+        var signedComputerMove = HMACService.SignComputerMove(keyBytes, computerMove);
+        Console.WriteLine("HMAC: " + signedComputerMove);
+
+        return (keyBytes, computerMove);
     }
 
     static void PrintMenu(string[] gameOptions)
@@ -99,11 +103,25 @@ public class Program
     {
         Console.WriteLine($"Your move: {userMove}");
         Console.WriteLine($"Computer move: {computerMove}");
-        var result = gameLogic.GetGameResultForUser((computerMove, userMove));
-        result = result.Equals("draw") ?
-            char.ToUpper(result[0]) + result.Substring(1) :
-            $"You {result}";
-        Console.WriteLine(result);
+        var userData = gameLogic.GetGameResultForUser((computerMove, userMove));
+        var userResult = ResultDataToString(userData);
+        Console.WriteLine(userResult);
+    }
+
+    private static void PrintKey(byte[] keyBytes)
+    {
+        var key = BitConverter.ToString(keyBytes).Replace("-", "");
+        Console.WriteLine($"HMAC Key: {key}");
+    }
+
+    private static string ResultDataToString(GameResult gameResult)
+    {
+        return gameResult switch
+        {
+            GameResult.Draw => "Draw!",
+            GameResult.Lose => "You lose!",
+            GameResult.Win => "You win!",
+        };
     }
 }
 

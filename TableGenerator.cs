@@ -20,8 +20,8 @@ public static class TableGenerator
 
             foreach (var userMove in moves)
             {
-                var userResult = gameLogic.GetGameResultForUser((compMove, userMove));
-                userResult = char.ToUpper(userResult[0]) + userResult.Substring(1);
+                var userData = gameLogic.GetGameResultForUser((compMove, userMove));
+                var userResult = ResultToString(userData);
                 row.Add(userResult);
             }
             tableData.Add(row);
@@ -31,5 +31,15 @@ public static class TableGenerator
             .From(tableData)
             .WithFormat(ConsoleTableBuilderFormat.Alternative)
             .ExportAndWriteLine();
+    }
+
+    private static string ResultToString(GameResult gameResult)
+    {
+        return gameResult switch
+        {
+            GameResult.Draw => "Draw",
+            GameResult.Lose => "Lose",
+            GameResult.Win => "Win",
+        };
     }
 }

@@ -8,11 +8,11 @@ public class GameLogic
         _moveOptions = moveOtions;
     }
 
-    public string GetGameResultForUser((string ComputerMove, string UserMove) moves)
+    public GameResult GetGameResultForUser((string ComputerMove, string UserMove) moves)
     {
-        if (IsDraw(moves)) return "draw";
-        if (IsUserWinner(moves)) return "win";
-        return "lose";
+        if (IsDraw(moves)) return GameResult.Draw;
+        if (IsUserWinner(moves)) return GameResult.Win;
+        return GameResult.Lose;
     }
 
     bool IsUserWinner((string ComputerMove, string UserMove) moves)
